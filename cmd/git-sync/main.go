@@ -687,6 +687,7 @@ func addWorktreeAndSwap(ctx context.Context, gitRoot, dest, branch, rev string, 
 		if err != nil {
 			return err
 		}
+		log.V(0).Info("command executed successfully", "command", *flSyncHookCommand)
 	}
 
 	// Flip the symlink.
@@ -864,6 +865,15 @@ func cmdForLog(command string, args ...string) string {
 }
 
 func runCommand(ctx context.Context, cwd, command string, args ...string) (string, error) {
+	// slice --sync-hook-command into proper format
+	if len(args) == 0 {
+		parts := strings.Split(command, " ")
+		if len(parts) > 1 {
+			command = parts[0]
+			args = parts[1:]
+		}
+	}
+
 	return runCommandWithStdin(ctx, cwd, "", command, args...)
 }
 

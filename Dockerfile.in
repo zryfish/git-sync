@@ -18,10 +18,18 @@ RUN apt-get update \
     && apt-get -y upgrade \
     && apt-get -y install \
         ca-certificates \
+        wget \
         coreutils \
         socat \
         git \
         openssh-client \
+    && wget --quiet "${DOCKER_HUGO_URL}" \
+    && wget --quiet "${DOCKER_HUGO_CHECKSUM_URL}" \
+    && grep "${DOCKER_HUGO_NAME}.tar.gz" "./hugo_${DOCKER_HUGO_VERSION}_checksums.txt" | sha256sum -c - \
+    && tar -zxvf "${DOCKER_HUGO_NAME}.tar.gz" \
+    && rm "${DOCKER_HUGO_NAME}.tar.gz" \
+    && mv ./hugo /usr/bin/hugo \
+    && hugo version \
     && rm -rf /var/lib/apt/lists/*
 
 # By default we will run as this user...
